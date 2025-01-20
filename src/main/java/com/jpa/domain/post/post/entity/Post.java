@@ -12,7 +12,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
+@NoArgsConstructor // JPA에서 엔티티를 Reflection으로 생성할 때 사용한다
 @AllArgsConstructor // Builder는 내부적으로 AllArgsConstructor를 사용한다
 @Builder
 @Getter
