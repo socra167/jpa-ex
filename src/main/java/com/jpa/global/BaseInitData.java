@@ -100,9 +100,20 @@ public class BaseInitData {
 	public ApplicationRunner applicationRunner5() {
 		return args -> {
 			Post post = postService.findById(3L).get();
+			if (commentService.count() > 0) {
+				return;
+			}
 			Comment c1 = commentService.write(post.getId(), "comment1");
 			Comment c2 = commentService.write(post.getId(), "comment2");
 			Comment c3 = commentService.write(post.getId(), "comment3");
+
+			// 게시글에 대한 -> 댓글 가져오기
+
+			// 댓글의 -> 부모 게시글의 정보
+			System.out.println(c1.getId() + "번 댓글의 부모 게시글 번호는 " + c1.getPostId() + "입니다");
+
+			Post parent = postService.findById(c1.getPostId()).get(); // 구린 코드
+			System.out.println(c1.getId() + "번 댓글의 부모 게시글 번호는 " + parent.getTitle() + "입니다");
 		};
 	}
 }
