@@ -8,7 +8,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.jpa.domain.post.post.entity.Post;
-import com.jpa.domain.post.post.entity.service.PostService;
+import com.jpa.domain.post.post.service.PostService;
 
 import lombok.RequiredArgsConstructor;
 

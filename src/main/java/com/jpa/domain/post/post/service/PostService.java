@@ -1,4 +1,4 @@
-package com.jpa.domain.post.post.entity.service;
+package com.jpa.domain.post.post.service;
 
 import java.util.Optional;
 
