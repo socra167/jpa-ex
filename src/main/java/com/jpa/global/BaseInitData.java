@@ -1,5 +1,6 @@
 package com.jpa.global;
 
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -62,6 +63,24 @@ public class BaseInitData {
 
 			// postService.deleteById(1L);
 			// postService.deleteById(2L);
+		};
+	}
+
+	@Order(4)
+	@Bean
+	public ApplicationRunner applicationRunner4() {
+		return new ApplicationRunner() {
+			@Override
+			public void run(ApplicationArguments args) throws Exception {
+				Post post = postService.findById(3L).get();
+				System.out.println(post.getId() + "번 포스트를 가져왔습니다.");
+				System.out.println("====================================");
+
+				Post post2 = postService.findById(3L).get();
+				// @Transactional이 있을 때: Entity가 영속성 컨텍스트에 존재하므로, 영속성 컨텍스트에서 가져와 SELECT 쿼리가 발생하지 않았다
+				// @Transactional이 없을 때: 각각 findById()가 별개의 트랜잭션이므로, 각각의 호출마다 SELECT 쿼리가 발생했다
+				System.out.println(post2.getId() + "번 포스트를 가져왔습니다.");
+			}
 		};
 	}
 }
