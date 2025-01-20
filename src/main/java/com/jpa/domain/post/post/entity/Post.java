@@ -7,11 +7,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@AllArgsConstructor // Builder는 내부적으로 AllArgsConstructor를 사용한다
+@Builder
 @Getter
-@Setter
 @Entity
 public class Post {
 	@Id // PRIMARY KEY

@@ -15,14 +15,14 @@ public class PostService {
 	private final PostRepository postRepository;
 
 	public Post write(String title, String body) {
-		Post post = new Post();
+		Post post = Post.builder()
+			.title(title)
+			.body(body)
+			.createdDate(LocalDateTime.now())
+			.modifiedDate(LocalDateTime.now())
+			.build();
 		// post.setId(1L); : ID는 기본적으로 JPA가 관리한다
-		post.setCreatedDate(LocalDateTime.now());
-		post.setModifiedDate(LocalDateTime.now());
-		post.setTitle(title);
-		post.setBody(body);
-		postRepository.save(post);
-		return post;
+		return postRepository.save(post); // repository에서 save 하면 기본적으로 객체를 반환한다
 	}
 
 	public long count() {
