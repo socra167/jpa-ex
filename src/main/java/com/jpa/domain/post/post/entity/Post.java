@@ -10,8 +10,8 @@ import jakarta.persistence.Id;
 
 @Entity
 public class Post {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id // PRIMARY KEY
+	@GeneratedValue(strategy = GenerationType.IDENTITY) // AUTO_INCREMENT
 	private long id;
 	private LocalDateTime createdDate;
 	private LocalDateTime modifiedDate;
