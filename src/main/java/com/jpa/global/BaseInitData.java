@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jpa.domain.post.comment.entity.Comment;
+import com.jpa.domain.post.comment.service.CommentService;
 import com.jpa.domain.post.post.entity.Post;
 import com.jpa.domain.post.post.service.PostService;
 
@@ -16,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 public class BaseInitData {
 	private final PostService postService;
+	private final CommentService commentService;
 
 	@Order(1)
 	@Bean
@@ -89,6 +92,17 @@ public class BaseInitData {
 				// @Transactional이 없을 때: 각각 findById()가 별개의 트랜잭션이므로, 각각의 호출마다 SELECT 쿼리가 발생했다
 				System.out.println(post2.getId() + "번 포스트를 가져왔습니다.");
 			}
+		};
+	}
+
+	@Order(5)
+	@Bean
+	public ApplicationRunner applicationRunner5() {
+		return args -> {
+			Post post = postService.findById(3L).get();
+			Comment c1 = commentService.write(post.getId(), "comment1");
+			Comment c2 = commentService.write(post.getId(), "comment2");
+			Comment c3 = commentService.write(post.getId(), "comment3");
 		};
 	}
 }
