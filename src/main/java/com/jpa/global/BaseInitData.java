@@ -5,6 +5,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.jpa.domain.post.post.entity.Post;
 import com.jpa.domain.post.post.entity.service.PostService;
@@ -50,19 +51,25 @@ public class BaseInitData {
 	@Order(3)
 	@Bean
 	public ApplicationRunner applicationRunner3() {
-		return args -> {
-			Post p1 = postService.findById(1L).get();
-			Post p2 = postService.findById(2L).get();
+		return new ApplicationRunner() {
+			@Transactional
+			@Override
+			public void run(ApplicationArguments args) throws Exception {
 
-			System.out.println("===== p1 삭제 =====");
-			postService.delete(p1);
-			System.out.println("===== p1 삭제 완료 =====");
-			System.out.println("===== p2 삭제 =====");
-			postService.delete(p2);
-			System.out.println("===== p2 삭제 완료 =====");
+				Post p1 = postService.findById(1L).get();
+				Post p2 = postService.findById(2L).get();
 
-			// postService.deleteById(1L);
-			// postService.deleteById(2L);
+				System.out.println("===== p1 삭제 =====");
+				postService.delete(p1);
+				System.out.println("===== p1 삭제 완료 =====");
+				System.out.println("===== p2 삭제 =====");
+				postService.delete(p2);
+				System.out.println("===== p2 삭제 완료 =====");
+				// @Transactional 이 있을 때, update, delete 쿼리는 트랜잭션이 끝날 때(커밋될 때) 일괄처리된다
+
+				// postService.deleteById(1L);
+				// postService.deleteById(2L);
+			}
 		};
 	}
 
@@ -70,6 +77,7 @@ public class BaseInitData {
 	@Bean
 	public ApplicationRunner applicationRunner4() {
 		return new ApplicationRunner() {
+			@Transactional
 			@Override
 			public void run(ApplicationArguments args) throws Exception {
 				Post post = postService.findById(3L).get();
