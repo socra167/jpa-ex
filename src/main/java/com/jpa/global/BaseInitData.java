@@ -111,4 +111,32 @@ public class BaseInitData {
 			}
 		};
 	}
+
+	@Order(6)
+	@Bean
+	public ApplicationRunner applicationRunner6() {
+		return new ApplicationRunner() {
+			@Override
+			@Transactional
+			public void run(ApplicationArguments args) throws Exception {
+				Comment c1 = commentService.findById(1L).get();
+				// SELECT * FROM comment WHERE id = 1;
+
+				Post post = c1.getPost(); // EAGER -> 이미 모든 post 정보를 위에서 Join으로 가져온다.
+										// LAZY -> 위에서 찾은 c1의 post는 비어 있다.(null은 아니고, id만 채워져 있다.)
+				// post를 얻기 위해 "SELECT * FROM post WHERE id = 1;" 쿼리가 동작할 것이다 -> x
+				// 이미 모든 post 정보를 위에서 Join으로 가져온다.
+
+				System.out.println("post.getId() = " + post.getId());
+				System.out.println("post.getTitle() = " + post.getTitle());
+
+				// 실제로는 쿼리가 두 번되지 않고, 연관있는 객체를 가져올 때 Join을 해서 가져왔다.
+				// 이렇게 데이터를 꺼내오는 방식을 Fetch 라고 한다. / 조인해서 데이터를 한방에 가져오는 방식 FetchType.EAGER(열심히)
+
+				// FetchType.LAZY는 시킨 일만 한다.
+
+				// 안적으면 기본적으로 FetchType.EAGER / LAZY로 적어주는게 좋다.
+			}
+		};
+	}
 }

@@ -1,5 +1,7 @@
 package com.jpa.domain.post.comment.service;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
 import com.jpa.domain.post.comment.entity.Comment;
@@ -25,5 +27,9 @@ public class CommentService {
 
 	public long count() {
 		return commentRepository.count();
+	}
+
+	public Optional<Comment> findById(Long id) {
+		return commentRepository.findById(id);
 	}
 }
