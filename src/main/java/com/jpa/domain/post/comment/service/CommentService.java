@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.jpa.domain.post.comment.entity.Comment;
 import com.jpa.domain.post.comment.repository.CommentRepository;
+import com.jpa.domain.post.post.entity.Post;
 
 import lombok.RequiredArgsConstructor;
 
@@ -13,8 +14,9 @@ public class CommentService {
 
 	private final CommentRepository commentRepository;
 
-	public Comment write(String body) {
+	public Comment write(Post post, String body) {
 		Comment comment = Comment.builder()
+			.post(post)
 			.body(body)
 			.build();
 

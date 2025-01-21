@@ -28,15 +28,13 @@ public class BaseInitData {
 				return;
 			}
 			// 데이터가 없으면 샘플 데이터 3개 생성
-			System.out.println("=== 1번 데이터 생성 ===");
 			Post p1 = postService.write("title1", "body1");
-			System.out.println("=== 1번 데이터 생성 완료 ===");
-			System.out.println("=== 2번 데이터 생성 ===");
-			Post p2 = postService.write("title2", "body2");
-			System.out.println("=== 2번 데이터 생성 완료 ===");
-			System.out.println("=== 3번 데이터 생성 ===");
-			Post p3 = postService.write("title3", "body3");
-			System.out.println("=== 3번 데이터 생성 완료 ===");
+			postService.write("title2", "body2");
+			postService.write("title3", "body3");
+
+			commentService.write(p1, "comment1");
+			commentService.write(p1, "comment2");
+			commentService.write(p1, "comment3");
 		};
 	}
 
