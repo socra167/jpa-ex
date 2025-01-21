@@ -117,25 +117,31 @@ public class BaseInitData {
 	public ApplicationRunner applicationRunner6() {
 		return new ApplicationRunner() {
 			@Override
-			@Transactional
+			@Transactional 	// Transactional이 없으면 org.hibernate.LazyInitializationException: Could not initialize 발생
+							// 영속성 컨텍스트가 닫히면 DB 사용을 하지 않는다
 			public void run(ApplicationArguments args) throws Exception {
 				Comment c1 = commentService.findById(1L).get();
 				// SELECT * FROM comment WHERE id = 1;
+				// LAZY 로딩에서 Comment 내부의 post는 Hibernate의 프록시 객체인 상태(비어있음)
 
-				Post post = c1.getPost(); // EAGER -> 이미 모든 post 정보를 위에서 Join으로 가져온다.
-										// LAZY -> 위에서 찾은 c1의 post는 비어 있다.(null은 아니고, id만 채워져 있다.)
+				Post post = c1.getPost(); 	// EAGER -> 이미 모든 post 정보를 위에서 Join으로 가져온다
+				// LAZY -> 위에서 찾은 c1의 post는 비어 있다.(null은 아니고, id만 채워져 있다)
 				// post를 얻기 위해 "SELECT * FROM post WHERE id = 1;" 쿼리가 동작할 것이다 -> x
-				// 이미 모든 post 정보를 위에서 Join으로 가져온다.
+				// 이미 모든 post 정보를 위에서 Join으로 가져온다
 
+
+				System.out.println("post = " + post);
 				System.out.println("post.getId() = " + post.getId());
 				System.out.println("post.getTitle() = " + post.getTitle());
 
-				// 실제로는 쿼리가 두 번되지 않고, 연관있는 객체를 가져올 때 Join을 해서 가져왔다.
-				// 이렇게 데이터를 꺼내오는 방식을 Fetch 라고 한다. / 조인해서 데이터를 한방에 가져오는 방식 FetchType.EAGER(열심히)
+				// (Fetch타입을 설정하지 않은 상태에서) 실제로는 쿼리가 두 번되지 않고, 연관있는 객체를 가져올 때 Join을 해서 가져왔다
+				// 이렇게 데이터를 꺼내오는 방식을 Fetch 라고 한다 / 조인해서 데이터를 한방에 가져오는 방식 FetchType.EAGER(열심히)
+				// FetchType.LAZY는 시킨 일만 한다 / 나중에 필요한 게 생기면 그 때 가져온다
 
-				// FetchType.LAZY는 시킨 일만 한다.
-
-				// 안적으면 기본적으로 FetchType.EAGER / LAZY로 적어주는게 좋다.
+				// 안적으면 기본적으로 FetchType.EAGER로 작동한다 / LAZY로 명시해 사용하는 게 낫다
+				// EAGER를 사용하면 불필요한 커넥션이 줄어드는 장점이 있긴 하지만 굳이 필요 없는 경우에도 가져오기 때문에
+				// 성능적으로 LAZY가 낫고 EAGER 사용 시 N+1 문제가 발생하기 쉽다
+				// (Member를 가져올 때마다 그 멤버가 작성한 모든 글을 가져오게 된다면?)
 			}
 		};
 	}
