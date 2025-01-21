@@ -52,6 +52,9 @@ public class Post {
 	private String body;
 
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+	// @OneToMany만 사용하면 post_comment 테이블이 생성된다
+	// 외래 키를 누가 가져야 하는가? Comment 클래스에 있는 연관된 변수 이름 (외래키는 항상 다쪽에 생긴다)
+	// mapped를 사용하지 않은 쪽이 외래키의 주인이 된다(Comment)
 	@Builder.Default // 기본 초기화 값이 존재하므로, 빌더 패턴에서 제외시킨다
 	private List<Comment> comments = new ArrayList<>();
 	// @OneToMany를 붙이지 않으면 컴파일 오류가 나오는데
@@ -60,5 +63,6 @@ public class Post {
 
 	public void addComment(Comment comment) {
 		comments.add(comment);
+		comment.setPost(this);
 	}
 }

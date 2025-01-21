@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jpa.domain.post.comment.entity.Comment;
 import com.jpa.domain.post.comment.service.CommentService;
 import com.jpa.domain.post.post.entity.Post;
+import com.jpa.domain.post.post.repository.PostRepository;
 import com.jpa.domain.post.post.service.PostService;
 
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,8 @@ public class BaseInitData {
 	@Autowired
 	@Lazy // 모든 세팅이 완료되고, 실행 되면 넣도록 한다
 	private BaseInitData self; // 빈으로 등록된 프록시 객체를 획득한다
+	@Autowired
+	private PostRepository postRepository;
 	// final을 붙이면 Lazy하게 동작하지 않으므로 final을 사용하면 똑같이 순환 에러가 발생
 
 	@Order(1)
@@ -118,9 +121,7 @@ public class BaseInitData {
 				if (commentService.count() > 0) {
 					return;
 				}
-				Comment c5 = Comment.builder()
-					.body("comment5")
-					.build();
+				Comment c5 = Comment.builder().body("comment5").build();
 				post.addComment(c5);
 			}
 		};
@@ -131,15 +132,15 @@ public class BaseInitData {
 	public ApplicationRunner applicationRunner6() {
 		return new ApplicationRunner() {
 			@Override
-			@Transactional 	// Transactional이 없으면 org.hibernate.LazyInitializationException: Could not initialize 발생
-							// Proxy를 채울 수 없다는 에러
-							// 영속성 컨텍스트가 닫히면 DB 사용을 하지 않는다
+			@Transactional    // Transactional이 없으면 org.hibernate.LazyInitializationException: Could not initialize 발생
+			// Proxy를 채울 수 없다는 에러
+			// 영속성 컨텍스트가 닫히면 DB 사용을 하지 않는다
 			public void run(ApplicationArguments args) throws Exception {
 				Comment c1 = commentService.findById(1L).get();
 				// SELECT * FROM comment WHERE id = 1;
 				// LAZY 로딩에서 Comment 내부의 post는 Hibernate의 프록시 객체인 상태(비어있음)
 
-				Post post = c1.getPost(); 	// EAGER -> 이미 모든 post 정보를 위에서 Join으로 가져온다
+				Post post = c1.getPost();    // EAGER -> 이미 모든 post 정보를 위에서 Join으로 가져온다
 				// LAZY일 때 -> 위에서 찾은 c1의 post는 비어 있다.(null은 아니고, id만 채워져 있다)
 				// EAGER일 때 -> post를 얻기 위해 "SELECT * FROM post WHERE id = 1;" 쿼리가 동작할 것이다 (x)
 				// 이미 모든 post 정보를 위에서 Join으로 가져온다
@@ -174,7 +175,7 @@ public class BaseInitData {
 			}
 		};
 	}
-	
+
 	@Order(7)
 	@Bean
 	public ApplicationRunner applicationRunner7() {
@@ -197,8 +198,35 @@ public class BaseInitData {
 	@Transactional
 	public void work() {
 		Comment c1 = commentService.findById(1L).get();
+
 		Post post = c1.getPost();
 		System.out.println("post.getId() = " + post.getId());
 		System.out.println("post.getTitle() = " + post.getTitle());
+
+	}
+
+	@Order(8)
+	@Bean
+	public ApplicationRunner applicationRunner8() {
+		return new ApplicationRunner() {
+			@Override
+			public void run(ApplicationArguments args) throws Exception {
+				self.work1();
+			}
+		};
+	}
+
+	@Transactional
+	public void work1() {
+		Post p1 = postService.write("title_action8", "body_action8");
+
+		Comment c1 = Comment.builder()
+			.body("body1")
+			.build();
+
+		// p1.getComments().add(c1); // 관계의 주인이 DB 반영을 한다
+		// commentService.write(p1, "comment1");
+
+		p1.addComment(c1); // addComment()에서 관계의 주인인 Comment의 Post로 등록하도록 했기 때문에 DB에 반영된다
 	}
 }
