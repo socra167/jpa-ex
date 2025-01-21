@@ -1,9 +1,11 @@
 package com.jpa.global;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +21,18 @@ import lombok.RequiredArgsConstructor;
 public class BaseInitData {
 	private final PostService postService;
 	private final CommentService commentService;
+
+	// private final BaseInitData self; // 빈으로 등록된 프록시 객체를 획득한다
+	/* 클래스 자기 자신을 포함하면 순환하기 때문에 이렇게는 불가능하다
+	┌──->──┐
+	|  baseInitData defined in file [/Users/.../BaseInitData.class]
+	└──<-──┘
+	 */
+
+	@Autowired
+	@Lazy // 모든 세팅이 완료되고, 실행 되면 넣도록 한다
+	private BaseInitData self; // 빈으로 등록된 프록시 객체를 획득한다
+	// final을 붙이면 Lazy하게 동작하지 않으므로 final을 사용하면 똑같이 순환 에러가 발생
 
 	@Order(1)
 	@Bean
@@ -162,6 +176,10 @@ public class BaseInitData {
 			public void run(ApplicationArguments args) throws Exception {
 				// work(); // 메서드에 @Transactional을 적용했으나 org.hibernate.LazyInitializationException이 발생했다
 				// Proxy가 적용되지 않은 실제 메서드를 직접 호출했기 때문에 실제 동작에는 @Transcational이 적용되지 않았다
+				// BaseInitData 프록시를 거치지 않고 내부 메서드를 직접 호출했기 때문이다
+
+				// 해결 방법 : 프록시를 획득하면 된다.
+				self.work(); // 프록시의 work() (트랜잭션 처리가 되는 메서드)를 호출해서 해결했다
 			}
 		};
 	}
