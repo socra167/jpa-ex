@@ -221,12 +221,46 @@ public class BaseInitData {
 		Post p1 = postService.write("title_action8", "body_action8");
 
 		Comment c1 = Comment.builder()
-			.body("body1")
+			.body("first comment body")
 			.build();
 
 		// p1.getComments().add(c1); // 관계의 주인이 DB 반영을 한다
 		// commentService.write(p1, "comment1");
 
+		// c1 = commentService.save(c1); // Post의 comments에 Cascade 설정을 해주지 않으면 이 코드가 있어야 실제로 반영된다
 		p1.addComment(c1); // addComment()에서 관계의 주인인 Comment의 Post로 등록하도록 했기 때문에 DB에 반영된다
+
+		// ===============================================================================
+
+		Comment c2 = Comment.builder()
+			.body("second comment body")
+			.build();
+
+		p1.addComment(c2);
+		// 더티체킹으로 Post.addComment() 메서드만으로 Comment가 저장되도록 하고 싶다
+		// -> Post의 comments, cascade에 CascadeType을 적용하면 된다 (Cascade.ALL)
+
+		// [ 영속성의 전파 ]
+		// Post에게 영속성 작업(CascadeType. ALL, PERSIST, MERGE, REMOVE, REFRESH, DETACH)
+		// PERSIST: insert / 영속성 컨텍스트에서 persist 하면 최종적으로 insert 쿼리
+		// REMOVE: delete
+
+		// comment가 원래 스냅샷에서의 comment와, 현재 객체 comment -> 일치하지 않는 부분에 Insert가 일어난다.
+		// 반대로, 뭔가 삭제된 경우 delete가 일어난다.
+		// Cascade.PERSIST일 땐 추가된 경우에만 insert되고, 객체에서 제거되더라도 delete되진 않는다.
+		// -> CascadeType 설정을 통해 객체지향적으로 DB를 사용할 수 있게 되었다
+
+		Comment c3 = Comment.builder()
+			.body("third comment body")
+			.build();
+		p1.addComment(c3);
+
+		p1.removeComment(c1); // removeComment()로 Comment가 제거되도록 하려면, orphanRemoval = true 를 설정하면 된다
+
+		// @ManyToOne -> 외래키
+		// @OneToMany -> 없어도 그만, 옵셔널
+		// -> 객체지향적으로 접근
+		// -> 양방향 객체 탐색
+		// -> 복잡함, 절제해서 사용 (잘 모르겠으면 사용하지 않는 걸 추천한다)
 	}
 }
