@@ -6,12 +6,16 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.jpa.domain.post.post.entity.Post;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,5 +46,7 @@ public class Comment {
 	@Column(columnDefinition = "TEXT")
 	private String body;
 
-	private Long postId;
+	@ManyToOne
+	@JoinColumn(name = "post_id")
+	private Post post;
 }

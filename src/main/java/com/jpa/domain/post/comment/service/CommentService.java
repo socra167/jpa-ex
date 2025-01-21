@@ -13,9 +13,8 @@ public class CommentService {
 
 	private final CommentRepository commentRepository;
 
-	public Comment write(Long postId, String body) {
+	public Comment write(String body) {
 		Comment comment = Comment.builder()
-			.postId(postId)
 			.body(body)
 			.build();
 

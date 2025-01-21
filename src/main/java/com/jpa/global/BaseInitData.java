@@ -110,11 +110,6 @@ public class BaseInitData {
 					.body("comment5")
 					.build();
 				post.addComment(c5);
-
-				// 댓글에서 부모글 정보를 조회
-				Long parentId = c5.getPostId();
-				Post parentPost = postService.findById(parentId).get(); // 객체지향 보다 DB 조회에 가까운 코드가 됨
-				System.out.println("parentPost.getTitle() = " + parentPost.getTitle());
 			}
 		};
 	}
