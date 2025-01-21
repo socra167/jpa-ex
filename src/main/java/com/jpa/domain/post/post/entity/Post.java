@@ -51,7 +51,7 @@ public class Post {
 	@Column(columnDefinition = "TEXT")
 	private String body;
 
-	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default // 기본 초기화 값이 존재하므로, 빌더 패턴에서 제외시킨다
 	private List<Comment> comments = new ArrayList<>();
 	// @OneToMany를 붙이지 않으면 컴파일 오류가 나오는데
