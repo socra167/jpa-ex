@@ -14,7 +14,6 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -38,15 +37,16 @@ public class Comment {
 
 	@CreatedDate
 	@Column(updatable = false)
+	@Setter(AccessLevel.PRIVATE)
 	private LocalDateTime createdDate;
 
 	@LastModifiedDate
+	@Setter(AccessLevel.PRIVATE)
 	private LocalDateTime modifiedDate;
 
 	@Column(columnDefinition = "TEXT")
 	private String body;
 
 	@ManyToOne
-	@JoinColumn(name = "post_id")
 	private Post post;
 }
