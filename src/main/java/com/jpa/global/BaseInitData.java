@@ -152,11 +152,18 @@ public class BaseInitData {
 				// 이렇게 데이터를 꺼내오는 방식을 Fetch 라고 한다 / 조인해서 데이터를 한방에 가져오는 방식 FetchType.EAGER(열심히)
 				// FetchType.LAZY는 시킨 일만 한다 / 나중에 필요한 게 생기면 그 때 가져온다
 
-				// 안적으면 기본적으로 FetchType.EAGER로 작동한다 / LAZY로 명시해 사용하는 게 낫다
+				// FetchType을 명시하지 않으면 Default는 FetchType.EAGER로 작동한다 / LAZY로 명시해 사용하는 게 낫다
 				// EAGER를 사용하면 불필요한 커넥션이 줄어드는 장점이 있긴 하지만 굳이 필요 없는 경우에도 가져오기 때문에
 				// 성능적으로 LAZY가 낫고 EAGER 사용 시 N+1 문제가 발생하기 쉽다
 				// (Member를 가져올 때마다 그 멤버가 작성한 모든 글을 가져오게 된다면?)
+				// 주의 사항: DB커넥션이 끊긴(DB상호작용이 없는) 상태에서 LAZY로 설정한 필드를 조회하면 예외가 발생한다. LazyInitializationException
 
+				// ### FetchType.EAGER vs FetchType.LAZY
+				// EAGER: 연관된 엔티티를 즉시 로딩한다. Comment 엔티티를 로드할 때 Post 엔티티도 즉시 함께 로드합니다.
+				// LAZY: 연관된 엔티티를 실제로 사용할 때까지 로딩을 지연한다. 예를 들어, c1.getPost()를 호출할 때 Post 엔티티가 로드된다.
+				// 		하지만 LAZY 로딩은 트랜잭션이 열려 있는 동안에만 안전하게 사용할 수 있다. LazyInitializationException
+
+				// ### @Transactional 프록시의 동작 원리
 				// Spring은 어떻게 @Transaction으로 트랜잭션 범위를 정할 수 있나? -> Proxy
 				// @Transactional을 붙인 메서드를 가진 빈은 가짜(프록시)객체로 조종하게 된다.
 				// 1. @Transactional이 적용된 클래스의 프록시 객체를 생성한다.
