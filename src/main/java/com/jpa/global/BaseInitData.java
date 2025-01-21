@@ -50,7 +50,7 @@ public class BaseInitData {
 	}
 
 	@Order(3)
-	@Bean
+	// @Bean // 삭제 비활성화
 	public ApplicationRunner applicationRunner3() {
 		return new ApplicationRunner() {
 			@Transactional
