@@ -1,17 +1,23 @@
 package com.jpa.domain.post.post.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.jpa.domain.post.comment.entity.Comment;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,4 +50,15 @@ public class Post {
 
 	@Column(columnDefinition = "TEXT")
 	private String body;
+
+	@OneToMany(cascade = CascadeType.ALL)
+	@Builder.Default // 기본 초기화 값이 존재하므로, 빌더 패턴에서 제외시킨다
+	private List<Comment> comments = new ArrayList<>();
+	// @OneToMany를 붙이지 않으면 컴파일 오류가 나오는데
+	// 'Basic' attribute type should not be a container
+	// Spring Data JPA에서 이 데이터를 어떻게 저장해야 할 지 모르기 때문이다
+
+	public void addComment(Comment comment) {
+		comments.add(comment);
+	}
 }
