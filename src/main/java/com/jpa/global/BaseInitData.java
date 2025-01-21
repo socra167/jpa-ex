@@ -118,6 +118,7 @@ public class BaseInitData {
 		return new ApplicationRunner() {
 			@Override
 			@Transactional 	// Transactional이 없으면 org.hibernate.LazyInitializationException: Could not initialize 발생
+							// Proxy를 채울 수 없다는 에러
 							// 영속성 컨텍스트가 닫히면 DB 사용을 하지 않는다
 			public void run(ApplicationArguments args) throws Exception {
 				Comment c1 = commentService.findById(1L).get();
@@ -147,9 +148,29 @@ public class BaseInitData {
 				// 1. @Transactional이 적용된 클래스의 프록시 객체를 생성한다.
 				// 2. @Transactional이 적용된 메서드가 호출되면, 실제 메서드가 아니라 프록시 객체의 메서드가 호출된다.
 				// 		프록시 객체의 메서드에서 트랜잭션 관리 코드를 추가로 실행한다.
-				//	3. 프록시 객체는 메서드가 실행되기 전 TransactionManager로 트랜잭션을 시작하고,
-				//	4. 실제 메서드가(비즈니스 로직 실행) 실행된 후 프록시는 TransactionManager로 커밋 또는 롤백한다.
+				// 3. 프록시 객체는 메서드가 실행되기 전 TransactionManager로 트랜잭션을 시작하고,
+				// 4. 실제 메서드가(비즈니스 로직 실행) 실행된 후 프록시는 TransactionManager로 커밋 또는 롤백한다.
 			}
 		};
+	}
+	
+	@Order(7)
+	@Bean
+	public ApplicationRunner applicationRunner7() {
+		return new ApplicationRunner() {
+			@Override
+			public void run(ApplicationArguments args) throws Exception {
+				// work(); // 메서드에 @Transactional을 적용했으나 org.hibernate.LazyInitializationException이 발생했다
+				// Proxy가 적용되지 않은 실제 메서드를 직접 호출했기 때문에 실제 동작에는 @Transcational이 적용되지 않았다
+			}
+		};
+	}
+
+	@Transactional
+	public void work() {
+		Comment c1 = commentService.findById(1L).get();
+		Post post = c1.getPost();
+		System.out.println("post.getId() = " + post.getId());
+		System.out.println("post.getTitle() = " + post.getTitle());
 	}
 }
