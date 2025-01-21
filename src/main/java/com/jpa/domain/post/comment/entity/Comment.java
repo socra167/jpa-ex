@@ -49,7 +49,7 @@ public class Comment {
 	@Column(columnDefinition = "TEXT")
 	private String body;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "post_id")
+	@ManyToOne(fetch = FetchType.LAZY) // 실제로 DB에 저장될 때는 Post 자체가 아니라 post_id가 저장되도록 한다
+	@JoinColumn(name = "post_id") // 설정하지 않아도 기본 post_id 로 네이밍된다
 	private Post post;
 }
