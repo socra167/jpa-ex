@@ -125,10 +125,9 @@ public class BaseInitData {
 				// LAZY 로딩에서 Comment 내부의 post는 Hibernate의 프록시 객체인 상태(비어있음)
 
 				Post post = c1.getPost(); 	// EAGER -> 이미 모든 post 정보를 위에서 Join으로 가져온다
-				// LAZY -> 위에서 찾은 c1의 post는 비어 있다.(null은 아니고, id만 채워져 있다)
-				// post를 얻기 위해 "SELECT * FROM post WHERE id = 1;" 쿼리가 동작할 것이다 -> x
+				// LAZY일 때 -> 위에서 찾은 c1의 post는 비어 있다.(null은 아니고, id만 채워져 있다)
+				// EAGER일 때 -> post를 얻기 위해 "SELECT * FROM post WHERE id = 1;" 쿼리가 동작할 것이다 (x)
 				// 이미 모든 post 정보를 위에서 Join으로 가져온다
-
 
 				System.out.println("post = " + post);
 				System.out.println("post.getId() = " + post.getId());
