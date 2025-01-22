@@ -219,6 +219,9 @@ public class BaseInitData {
 		};
 	}
 
+	/**
+	 * OneToMany에서 cascade와 orphanRemoval을 잘 사용하면 하나의 객체로 연관 객체의 라이프사이클 관리가 가능하다
+	 */
 	@Transactional
 	public void work1() {
 		Post p1 = postService.write("title_action8", "body_action8");
@@ -277,6 +280,9 @@ public class BaseInitData {
 		post.removeComment(c1); // 이 코드 때문에 delete가 일어난다
 	}
 
+	/**
+	 * OneToMany는 기본 Lazy 방식으로 작동. proxy가 필요한 시점에 한번에 가져온다.
+	 */
 	@Order(9)
 	@Bean
 	public ApplicationRunner applicationRunner9() {
