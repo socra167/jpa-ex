@@ -18,4 +18,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 	List<Post> findByTitleLike(String title);
 
 	List<Post> findByOrderByIdDesc();
+
+	List<Post> findTop2ByTitleOrderByIdDesc(String title);
 }

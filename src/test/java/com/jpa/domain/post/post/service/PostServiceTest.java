@@ -79,7 +79,7 @@ class PostServiceTest {
 
 	@Transactional
 	@Test
-	@DisplayName("아이디 순으로 내림차순 정렬되게 조회할 수 있다")
+	@DisplayName("글을 아이디 순으로 내림차순 정렬되게 조회할 수 있다")
 	void findPostByIdDesc() {
 		// SELECT * FROM post ORDER BY id DESC;
 		List<Post> posts = postService.findByOrderByIdDesc();
@@ -88,4 +88,12 @@ class PostServiceTest {
 		assertThat(posts.get(0).getId()).isEqualTo(3);
 	}
 
+	@Test
+	@DisplayName("위에서 2개의 글만 조회 ")
+	void limitTwoPosts() {
+		// SELECT * FROM post WHERE title = ? ORDER BY id DESC LIMIT 2;
+		List<Post> foundPosts = postService.findTop2ByTitleOrderByIdDesc("title1");
+		assertThat(foundPosts).hasSize(2);
+		assertThat(foundPosts.get(0).getId()).isEqualTo(3);
+	}
 }

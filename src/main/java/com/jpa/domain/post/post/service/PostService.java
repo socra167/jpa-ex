@@ -68,4 +68,8 @@ public class PostService {
 	public List<Post> findByOrderByIdDesc() {
 		return postRepository.findByOrderByIdDesc();
 	}
+
+	public List<Post> findTop2ByTitleOrderByIdDesc(String title) {
+		return postRepository.findTop2ByTitleOrderByIdDesc(title);
+	}
 }
