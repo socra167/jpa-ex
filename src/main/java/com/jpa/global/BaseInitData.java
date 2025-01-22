@@ -48,12 +48,24 @@ public class BaseInitData {
 			}
 			// 데이터가 없으면 샘플 데이터 3개 생성
 			Post p1 = postService.write("title1", "body1");
-			postService.write("title2", "body2");
-			postService.write("title3", "body3");
+			postService.write("title1", "body2");
+			postService.write("title1", "body3");
 
-			commentService.write(p1, "comment1");
-			commentService.write(p1, "comment2");
-			commentService.write(p1, "comment3");
+			// 샘플 Comment 3개 생성
+			Comment c1 = Comment.builder()
+				.body("comment1")
+				.build();
+			p1.addComment(c1);
+
+			Comment c2 = Comment.builder()
+				.body("comment2")
+				.build();
+			p1.addComment(c2);
+
+			Comment c3 = Comment.builder()
+				.body("comment3")
+				.build();
+			p1.addComment(c3);
 		};
 	}
 

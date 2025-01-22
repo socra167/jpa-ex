@@ -1,5 +1,6 @@
 package com.jpa.domain.post.post.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -46,5 +47,13 @@ public class PostService {
 
 	public void deleteById(long id) {
 		postRepository.deleteById(id);
+	}
+
+	public List<Post> findAll() {
+		return postRepository.findAll();
+	}
+
+	public List<Post> findByTitle(String title) {
+		return postRepository.findByTitle(title);
 	}
 }
