@@ -22,7 +22,7 @@ class PostServiceTest {
 	// @Rollback // SpringBootTest에선 Transactional이 있으면 Rollback은 생략해도 기본으로 동작한다
 				// 만약 실제로 반영되게 하고 싶다면, @Rollback(false)로 명시적으로 설정하면 된다
 	@Test
-	@DisplayName("글을 2게 작성한다")
+	@DisplayName("글을 작성할 수 있다")
 	void writePost() {
 		postService.write("title1", "body1");
 		postService.write("title2", "body2");
@@ -30,7 +30,7 @@ class PostServiceTest {
 
 	@Transactional
 	@Test
-	@DisplayName("모든 글을 조회한다")
+	@DisplayName("등록된 모든 글을 조회할 수 있다")
 	void findAllPost() {
 		var allPosts = this.postService.findAll();
 		assertThat(allPosts.size()).isEqualTo(3);
@@ -41,7 +41,7 @@ class PostServiceTest {
 
 	@Transactional
 	@Test
-	@DisplayName("글 조회")
+	@DisplayName("ID로 글을 조회할 수 있다")
 	void findPost() {
 		var optionalPost = postService.findById(1L);
 		assertThat(optionalPost).isPresent();
@@ -50,7 +50,7 @@ class PostServiceTest {
 
 	@Transactional
 	@Test
-	@DisplayName("제목으로 검색")
+	@DisplayName("제목으로 글을 조회할 수 있다")
 	void findPostByTitle() {
 		var fountPosts = postService.findByTitle("title1"); // select * from post where title = 'title1'
 		assertThat(fountPosts).hasSize(3);
@@ -58,7 +58,7 @@ class PostServiceTest {
 
 	@Transactional
 	@Test
-	@DisplayName("제목과 내용으로 글 조회")
+	@DisplayName("제목과 내용으로 글을 조회할 수 있다")
 	void findPostByTitleAndBody() {
 		// SELECT * FROM post WHERE title = ? and body = ?;
 		var foundPosts = postService.findByTitleAndBody("title1", "body1");
@@ -66,7 +66,7 @@ class PostServiceTest {
 	}
 
 	@Test
-	@DisplayName("제목이 포함된 결과 조회")
+	@DisplayName("제목이 포함된 글들을 조회할 수 있다")
 	void findByTitleLike() {
 		var foundPosts = postService.findByTitleLike("title%");
 		assertThat(foundPosts).hasSize(3);
