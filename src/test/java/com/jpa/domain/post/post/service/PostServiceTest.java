@@ -154,4 +154,15 @@ class PostServiceTest {
 		assertEquals(3, postPage.getNumberOfElements()); // 현재 페이지에 노출된 글 수
 		assertEquals(pageNumber, postPage.getNumber()); // 현재 페이지 번호
 	}
+
+	@Transactional
+	@Test
+	@DisplayName("회원 정보로 글을 조회할 수 있다")
+	void findPostByWriterUsername() {
+		// 회원 아이디로 회원이 작성한 글 목록 가져오기 / 이번엔 조인이 필요해졌다
+		// SELECT * FROM post p JOIN user u ON p.writer_id = u.id WHERE username = 'user1';
+		List<Post> posts = postService.findByWriterUsername("user1");
+		// Writer의 username으로 찾는다
+		assertThat(posts).hasSize(2);
+	}
 }
