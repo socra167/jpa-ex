@@ -1,6 +1,7 @@
 package com.jpa.domain.post.post.service;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
@@ -9,6 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -88,6 +93,7 @@ class PostServiceTest {
 		assertThat(posts.get(0).getId()).isEqualTo(3);
 	}
 
+	@Transactional
 	@Test
 	@DisplayName("위에서 2개의 글만 조회 ")
 	void limitTwoPosts() {
@@ -95,5 +101,31 @@ class PostServiceTest {
 		List<Post> foundPosts = postService.findTop2ByTitleOrderByIdDesc("title1");
 		assertThat(foundPosts).hasSize(2);
 		assertThat(foundPosts.get(0).getId()).isEqualTo(3);
+	}
+
+	@Test
+	@DisplayName("글을 페이지로 조회할 수 있다")
+	void findPage() {
+		// SELECT * FROM post ORDER BY id DESC LIMIT 2, 2;
+		// LIMIT 2 : 상위에서 2개를 가져온다
+		// LIMIT 2, 2 : 상위에서 2개를 건너뛰고 2개를 가져온다 (3, 4번째 데이터)
+		//			-> 페이징에 사용
+		// 이런 건 JPA에서 기본 메서드로 제공하지 않는다
+
+		int itemsPerPage = 2; // 한 페이지에 보여줄 아이템 수
+		int pageNumber = 2; // 현재 페이지 == 2
+
+		pageNumber--; // 1을 빼는 이유는 jpa는 페이지 번호를 0부터 시작하기 때문
+		Pageable pageable = PageRequest.of(pageNumber, itemsPerPage, Sort.by(Sort.Direction.DESC, "id"));
+		Page<Post> postPage = postService.findAll(pageable);
+		List<Post> posts = postPage.getContent();
+		assertEquals(1, posts.size()); // 글이 총 3개이고, 현재 페이지는 2이므로 1개만 보여야 함
+		Post post = posts.get(0);
+		assertEquals(1, post.getId());
+		assertEquals("title1", post.getTitle());
+		assertEquals(3, postPage.getTotalElements()); // 전체 글 수
+		assertEquals(2, postPage.getTotalPages()); // 전체 페이지 수
+		assertEquals(1, postPage.getNumberOfElements()); // 현재 페이지에 노출된 글 수
+		assertEquals(pageNumber, postPage.getNumber()); // 현재 페이지 번호
 	}
 }
