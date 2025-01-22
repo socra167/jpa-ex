@@ -6,6 +6,9 @@ spring:
     ansi:
       enabled: always # SpringBoot 로그를 색상으로 출력해준다. IDEA Ultimate에선 기본으로 동작한다.
 
+    profiles:
+      active: dev
+
   datasource:
     url: jdbc:h2:./db_dev;MODE=MySQL
     username: sa
