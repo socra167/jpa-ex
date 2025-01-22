@@ -3,6 +3,7 @@ package com.jpa.domain.post.post.entity;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -25,7 +26,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@EntityListeners(AuditingEntityListener.class) // 엔티티의 변화를 감지해 엔티티와 매핑된 테이블의 데이터를 조작한다 / 이벤트 리스너를 넣어 엔티티의 영속, 수정 이벤트를 감지한다
+@EntityListeners(AuditingEntityListener.class)
+// 엔티티의 변화를 감지해 엔티티와 매핑된 테이블의 데이터를 조작한다 / 이벤트 리스너를 넣어 엔티티의 영속, 수정 이벤트를 감지한다
 @NoArgsConstructor // JPA에서 엔티티를 Reflection으로 생성할 때 사용한다
 @AllArgsConstructor // Builder는 내부적으로 AllArgsConstructor를 사용한다
 @Builder
@@ -51,7 +53,7 @@ public class Post {
 	@Column(columnDefinition = "TEXT")
 	private String body;
 
-	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = false)
 	// @OneToMany만 사용하면 post_comment 테이블이 생성된다
 	// 외래 키를 누가 가져야 하는가? Comment 클래스에 있는 연관된 변수 이름 (외래키는 항상 다쪽에 생긴다)
 	// mapped를 사용하지 않은 쪽이 외래키의 주인이 된다(Comment)
@@ -73,5 +75,21 @@ public class Post {
 
 	public void removeComment(Comment c1) {
 		comments.remove(c1);
+	}
+
+	public void removeConmment(long id) {
+		Optional<Comment> opComment = comments.stream()
+			.filter(com -> com.getId() == id)
+			.findFirst();
+
+		opComment.ifPresent(comment -> comments.remove(comment));
+	}
+
+	public void removeAllComments() {
+		comments.stream()
+			.forEach(comment -> {
+				comment.setPost(null);
+			});
+		comments.clear();
 	}
 }

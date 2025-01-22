@@ -354,4 +354,67 @@ public class BaseInitData {
 			}
 		};
 	}
+
+	@Order(11)
+	@Bean
+	public ApplicationRunner applicationRunner11() {
+		return new ApplicationRunner() {
+			@Transactional
+			@Override
+			public void run(ApplicationArguments args) throws Exception {
+				Post post = postService.findById(1L).get();
+				System.out.println("post.getComments().size() = " + post.getComments().size());
+				postService.delete(post);
+				// orphanRemoval = true일 때,
+				// comments의 개수 3이 정상적으로 출력되었고
+				// Post가 삭제되고 post에 대한 comment들도 삭제되었다
+
+				// ==================================================================
+
+				// orphanRemoval = false로 설정하면?
+				// 예외가 발생한다 org.springframework.dao.InvalidDataAccessApiUsageException: org.hibernate.TransientObjectException: ...
+				// 영속 객체가 비영속 객체를 참조하려고 하면, TransientObjectException이 일어난다.
+				// post가 영속성 컨텍스트에서 사라졌는데 아직 comment는 바라보고 있는 상황
+
+				// ==================================================================
+
+				// 이 문제를 해결하려면, comment의 부모(Post)와의 연결을 끊어주면 된다
+				post.removeAllComments();
+				// 하지만 이렇게 하면 결국 comment의 post_id는 null인 쓸모 없는 데이터이므로
+				// orphanRemoval을 사용하면 좀 더 편리하다
+
+				// ==================================================================
+
+				// Comment를 지우지 않고 Post를 지우려고 하면
+				// post = postService.findById(4L).get();
+				// postService.delete(post);
+				// 예외 발생 org.springframework.dao.DataIntegrityViolationException: could not execute statement
+				// 외래키 제약 때문에 orphanRemoval이 설정되지 않으면 JPA에서는 부모를 삭제할 수 없다
+
+				// ==================================================================
+
+				// 가장 정석적인 방법은, Post가 갖고 있는 댓글 3개를 먼저 지우는 것이다
+				post = postService.findById(4L).get();
+				for (Comment comment : post.getComments()) {
+					commentService.delete(comment);
+				}
+				postService.delete(post);
+				// Post에 대한 자식 comment들을 먼저 지우고 Post를 지우면 문제가 발생하지 않는다
+				// ManyToOne으로 사용할 때엔 기본적으로 이 방식을 사용하면 되겠다
+
+				// 하지만, 글 - 댓글 관계처럼 글을 삭제하면 당연히 댓글이 지워져야 하는 경우라면
+				// 위 방식을 사용해도 되고, cascade = {Cascade.PERSIST, CascadeType.REMOVE} 로 설정해서 해결해도 된다
+				// PERSIST : 부모를 추가했을 때 자식들도 같이 추가된다 / REMOVE : 부모를 삭제했을 때 자식들도 같이 삭제된다
+				// CascadeType.REMOVE를 사용하면 Comment를 지우지 않고 Post만 지워도 comments가 같이 삭제된다
+
+				// Cascade.REMOVE vs orphanRemoval
+				// Cascade.REMOVE : 부모(Post)를 지웠을 때 자식(Comment)이 지워지는 것
+				// orphanRemoval : 부모(Post)가 살아 있을 때, 지워진 자식(Comment)들을 더티체킹으로 실제로 지우는 것
+
+				// CascadeType.ALL 보다 {CascadeType.PERSIST, CascadeType.REMOVE}로 세부적으로 선택해서 사용하는 것이 좋다
+				// CascadeType.ALL을 사용하면 모든 종류의 작업을 전이시켜 부모가 자식의 라이프사이클을 완전히 관리하기 때문에 의도하지 않은 결과가 발생할 가능성이 있다
+				// 완전히 소유하는 엔티티일 경우엔 CascadeType.ALL을 고려할 수 있다
+			}
+		};
+	}
 }
