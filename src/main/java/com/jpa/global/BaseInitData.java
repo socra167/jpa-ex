@@ -1,5 +1,7 @@
 package com.jpa.global;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -273,5 +275,52 @@ public class BaseInitData {
 		Post post = postService.findById(1L).get();
 		Comment c1 = commentService.findById(1L).get();
 		post.removeComment(c1); // 이 코드 때문에 delete가 일어난다
+	}
+
+	@Order(9)
+	@Bean
+	public ApplicationRunner applicationRunner9() {
+		return new ApplicationRunner() {
+			@Transactional
+			@Override
+			public void run(ApplicationArguments args) throws Exception {
+				Post post = postService.findById(1L).get();
+				System.out.println("1번 포스트를 가져왔다");
+
+				List<Comment> comments = post.getComments();
+				System.out.println("1번 포스트의 댓글을 가져왔다");
+
+				/*
+					Comment 테이블에 대한 SELECT가 일어났다.
+					select
+						c1_0.post_id,
+						c1_0.id,
+						c1_0.body,
+						c1_0.created_date,
+						c1_0.modified_date
+					from
+						comment c1_0
+					where
+						c1_0.post_id=?
+				 */
+				// LAZY일때 아래 코드(Comment를 조회하는 코드)가 없으면 comment에 대한 SELECT가 일어나지 않는다
+				String body = comments.get(0).getBody();
+				System.out.println("1번 포스트의 첫번째 댓글 내용을 가져왔다");
+				System.out.println("body = " + body);
+				// ManyToOne 에서는 기본값이 ( FetchType.EAGER )
+				// OneToMany 에서는 기본값이 ( FetchType.LAZY )
+
+				// " OneToMany에선 기본값이 LAZY인 이유 "
+				// 만약, 한 글에 1만개의 댓글이 있다고 생각해보자. 매번 1만개의 댓글을 가져오면?
+				// OneToMany에서 EAGER하게 동작한다면 사용하지도 않는 데이터를 가져오느라 성능적으로 낭비가 생길 것이다
+				// 그래서 JPA에선 OneToMany의 기본값으로 LAZY가 설정되어 있다
+
+				// LAZY하게 동작할 때, comments는 프록시인 상태로 getComments()가 사용되어야 실제로 가져온다
+
+				comments.get(1); // 2번째 댓글 가져오기
+				// 이렇게 1번째를 가져오고 2번째를 가져오게 하더라도, SELECT문이 실제로 2번 일어나지 않는다
+				// 하나의 INSERT문에서 두 댓글을 가져왔다 extracted value (1:BIGINT) -> [1] / extracted value (2:BIGINT) -> [2]
+			}
+		};
 	}
 }
