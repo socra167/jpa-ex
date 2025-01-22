@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jpa.domain.member.entity.Member;
 import com.jpa.domain.post.post.entity.Post;
 import com.jpa.domain.post.post.repository.PostRepository;
 
@@ -18,8 +19,9 @@ import lombok.RequiredArgsConstructor;
 public class PostService {
 	private final PostRepository postRepository;
 
-	public Post write(String title, String body) {
+	public Post write(Member writer, String title, String body) {
 		Post post = Post.builder()
+			.writer(writer)
 			.title(title)
 			.body(body)
 			.build();

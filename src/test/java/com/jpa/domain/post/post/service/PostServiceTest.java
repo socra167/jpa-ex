@@ -8,7 +8,6 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,15 +16,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jpa.domain.member.entity.Member;
+import com.jpa.domain.member.service.MemberService;
 import com.jpa.domain.post.post.entity.Post;
 
 @ActiveProfiles("test") // application.yml을 실행한 후 application-test.yml을 실행한 설정을 사용하도록 한다
 @SpringBootTest
 class PostServiceTest {
-	@Autowired
-	private PostService postService;
-	@Autowired
-	private ServerProperties serverProperties;
+	@Autowired private PostService postService;
+	@Autowired private MemberService memberService;
 
 	@Transactional
 	// @Rollback // SpringBootTest에선 Transactional이 있으면 Rollback은 생략해도 기본으로 동작한다
@@ -33,8 +32,9 @@ class PostServiceTest {
 	@Test
 	@DisplayName("글을 작성할 수 있다")
 	void writePost() {
-		postService.write("title1", "body1");
-		postService.write("title2", "body2");
+		Member user1 = memberService.findByUsername("user1").get();
+		postService.write(user1, "title1", "body1");
+		postService.write(user1, "title2", "body2");
 	}
 
 	@Transactional

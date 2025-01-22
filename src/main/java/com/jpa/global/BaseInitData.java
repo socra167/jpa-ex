@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jpa.domain.member.entity.Member;
+import com.jpa.domain.member.service.MemberService;
 import com.jpa.domain.post.comment.entity.Comment;
 import com.jpa.domain.post.comment.service.CommentService;
 import com.jpa.domain.post.post.entity.Post;
@@ -24,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class BaseInitData {
 	private final PostService postService;
 	private final CommentService commentService;
+	private final MemberService memberService;
 
 	// private final BaseInitData self; // 빈으로 등록된 프록시 객체를 획득한다
 	/* 클래스 자기 자신을 포함하면 순환하기 때문에 이렇게는 불가능하다
@@ -43,30 +46,52 @@ public class BaseInitData {
 	@Bean
 	public ApplicationRunner applicationRunner() {
 		return args -> {
-			if (0 < postService.count()) {
-				return;
-			}
-			// 데이터가 없으면 샘플 데이터 3개 생성
-			Post p1 = postService.write("title1", "body1");
-			postService.write("title1", "body2");
-			postService.write("title1", "body3");
-
-			// 샘플 Comment 3개 생성
-			Comment c1 = Comment.builder()
-				.body("comment1")
-				.build();
-			p1.addComment(c1);
-
-			Comment c2 = Comment.builder()
-				.body("comment2")
-				.build();
-			p1.addComment(c2);
-
-			Comment c3 = Comment.builder()
-				.body("comment3")
-				.build();
-			p1.addComment(c3);
+			self.createSampleMembers();
+			self.createSamplePostsAndComments();
 		};
+	}
+
+	@Transactional
+	public void createSampleMembers() {
+		memberService.join("system", "password1", "시스템");
+		memberService.join("admin", "password2", "관리자");
+		memberService.join("user1", "password3", "유저1");
+		memberService.join("user2", "password4", "유저2");
+		memberService.join("user3", "password5", "유저3");
+	}
+
+	@Transactional
+	public void createSamplePostsAndComments() {
+		if (0 < postService.count()) {
+			return;
+		}
+		// 데이터가 없으면 샘플 데이터 3개 생성
+		Member admin = memberService.findByUsername("admin").get();
+		Member user1 = memberService.findByUsername("user1").get();
+		Member user2 = memberService.findByUsername("user2").get();
+
+		Post p1 = postService.write(user1, "title1", "body1");
+		postService.write(user1, "title1", "body2");
+		postService.write(user2, "title1", "body3");
+
+		// 샘플 Comment 3개 생성
+		Comment c1 = Comment.builder()
+			.writer(admin)
+			.body("comment1")
+			.build();
+		p1.addComment(c1);
+
+		Comment c2 = Comment.builder()
+			.writer(user1)
+			.body("comment2")
+			.build();
+		p1.addComment(c2);
+
+		Comment c3 = Comment.builder()
+			.writer(user2)
+			.body("comment3")
+			.build();
+		p1.addComment(c3);
 	}
 
 	// 설정을 하지 않으면 어떤 ApplicationRunner가 먼저 실행될지 보장되지 않는다
@@ -230,7 +255,8 @@ public class BaseInitData {
 	 */
 	@Transactional
 	public void work1() {
-		Post p1 = postService.write("title_action8", "body_action8");
+		Member admin = memberService.findByUsername("admin").get();
+		Post p1 = postService.write(admin, "title_action8", "body_action8");
 
 		Comment c1 = Comment.builder()
 			.body("first comment body")
@@ -280,7 +306,7 @@ public class BaseInitData {
 	}
 
 	@Transactional
-	public void work2()	{
+	public void work2() {
 		Post post = postService.findById(1L).get();
 		Comment c1 = commentService.findById(1L).get();
 		post.removeComment(c1); // 이 코드 때문에 delete가 일어난다

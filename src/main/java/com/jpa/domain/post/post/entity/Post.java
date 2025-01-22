@@ -9,15 +9,18 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.jpa.domain.member.entity.Member;
 import com.jpa.domain.post.comment.entity.Comment;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -52,6 +55,9 @@ public class Post {
 
 	@Column(columnDefinition = "TEXT")
 	private String body;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Member writer;
 
 	@OneToMany(mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = false)
 	// @OneToMany만 사용하면 post_comment 테이블이 생성된다
