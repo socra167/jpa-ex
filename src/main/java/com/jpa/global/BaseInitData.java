@@ -323,4 +323,29 @@ public class BaseInitData {
 			}
 		};
 	}
+
+	/**
+	 * OneToMany 필드가 List라면 추가(INSERT) 전에 SELECT가 필요없다.
+	 */
+	@Order(10)
+	@Bean
+	public ApplicationRunner applicationRunner10() {
+		return new ApplicationRunner() {
+			@Transactional
+			@Override
+
+			public void run(ApplicationArguments args) throws Exception {
+				Post post = postService.findById(1L).get();
+				System.out.println("아이디가 1L인 Post를 가져왔다");
+
+				Comment comment = Comment.builder()
+					.body("applicationRunner10 comment")
+					.build();
+
+				post.addComment(comment);
+				// LAZY하게 동작하기 때문에 comments 리스트가 비어있는 상태인데 추가해도 실제로 DB에 반영이 될까?
+				// 이렇게 해도 더티체킹을 통해 정상적으로 추가된다. (Cascade.PERSIST)
+			}
+		};
+	}
 }
