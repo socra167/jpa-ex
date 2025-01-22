@@ -2,6 +2,8 @@ package com.jpa.domain.post.post.service;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,8 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.jpa.domain.post.post.entity.Post;
 
 @ActiveProfiles("test") // application.yml을 실행한 후 application-test.yml을 실행한 설정을 사용하도록 한다
 @SpringBootTest
@@ -70,5 +74,15 @@ class PostServiceTest {
 	void findByTitleLike() {
 		var foundPosts = postService.findByTitleLike("title%");
 		assertThat(foundPosts).hasSize(3);
+	}
+
+	@Test
+	@DisplayName("아이디 순으로 내림차순 정렬되게 조회할 수 있다")
+	void findPostByIdDesc() {
+		// SELECT * FROM post ORDER BY id DESC;
+		List<Post> posts = postService.findByOrderByIdDesc();
+		assertThat(posts).hasSize(3);
+
+		assertThat(posts.get(0).getId()).isEqualTo(3);
 	}
 }
