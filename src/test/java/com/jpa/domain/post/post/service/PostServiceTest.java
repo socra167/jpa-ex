@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 class PostServiceTest {
 	@Autowired
 	private PostService postService;
+	@Autowired
+	private ServerProperties serverProperties;
 
 	@Transactional
 	// @Rollback // SpringBootTest에선 Transactional이 있으면 Rollback은 생략해도 기본으로 동작한다
@@ -36,6 +39,7 @@ class PostServiceTest {
 		assertThat(post.getTitle()).isEqualTo("title1");
 	}
 
+	@Transactional
 	@Test
 	@DisplayName("글 조회")
 	void findPost() {
@@ -44,10 +48,27 @@ class PostServiceTest {
 		assertThat(optionalPost.get().getTitle()).isEqualTo("title1");
 	}
 
+	@Transactional
 	@Test
 	@DisplayName("제목으로 검색")
 	void findPostByTitle() {
-		var posts = postService.findByTitle("title1"); // select * from post where title = 'title1'
-		assertThat(posts).hasSize(3);
+		var fountPosts = postService.findByTitle("title1"); // select * from post where title = 'title1'
+		assertThat(fountPosts).hasSize(3);
+	}
+
+	@Transactional
+	@Test
+	@DisplayName("제목과 내용으로 글 조회")
+	void findPostByTitleAndBody() {
+		// SELECT * FROM post WHERE title = ? and body = ?;
+		var foundPosts = postService.findByTitleAndBody("title1", "body1");
+		assertThat(foundPosts).hasSize(1);
+	}
+
+	@Test
+	@DisplayName("제목이 포함된 결과 조회")
+	void findByTitleLike() {
+		var foundPosts = postService.findByTitleLike("title%");
+		assertThat(foundPosts).hasSize(3);
 	}
 }
