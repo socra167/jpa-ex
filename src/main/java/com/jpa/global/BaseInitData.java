@@ -59,7 +59,6 @@ public class BaseInitData {
 
 	// 설정을 하지 않으면 어떤 ApplicationRunner가 먼저 실행될지 보장되지 않는다
 	@Order(2) // 빈 생성의 순서를 설정할 수 있다
-	@Bean
 	public ApplicationRunner applicationRunner2() {
 		return args -> {
 			Post post = postService.findById(1L).get();
@@ -94,7 +93,6 @@ public class BaseInitData {
 	}
 
 	@Order(4)
-	@Bean
 	public ApplicationRunner applicationRunner4() {
 		return new ApplicationRunner() {
 			@Transactional
@@ -113,7 +111,6 @@ public class BaseInitData {
 	}
 
 	@Order(5)
-	@Bean
 	public ApplicationRunner applicationRunner5() {
 		return new ApplicationRunner() {
 			@Transactional
@@ -130,7 +127,6 @@ public class BaseInitData {
 	}
 
 	@Order(6)
-	@Bean
 	public ApplicationRunner applicationRunner6() {
 		return new ApplicationRunner() {
 			@Override
@@ -179,7 +175,6 @@ public class BaseInitData {
 	}
 
 	@Order(7)
-	@Bean
 	public ApplicationRunner applicationRunner7() {
 		return new ApplicationRunner() {
 			@Override
@@ -208,7 +203,6 @@ public class BaseInitData {
 	}
 
 	@Order(8)
-	@Bean
 	public ApplicationRunner applicationRunner8() {
 		return new ApplicationRunner() {
 			@Override
@@ -284,7 +278,6 @@ public class BaseInitData {
 	 * OneToMany는 기본 Lazy 방식으로 작동. proxy가 필요한 시점에 한번에 가져온다.
 	 */
 	@Order(9)
-	@Bean
 	public ApplicationRunner applicationRunner9() {
 		return new ApplicationRunner() {
 			@Transactional
@@ -334,7 +327,6 @@ public class BaseInitData {
 	 * OneToMany 필드가 List라면 추가(INSERT) 전에 SELECT가 필요없다.
 	 */
 	@Order(10)
-	@Bean
 	public ApplicationRunner applicationRunner10() {
 		return new ApplicationRunner() {
 			@Transactional
@@ -356,7 +348,6 @@ public class BaseInitData {
 	}
 
 	@Order(11)
-	@Bean
 	public ApplicationRunner applicationRunner11() {
 		return new ApplicationRunner() {
 			@Transactional
