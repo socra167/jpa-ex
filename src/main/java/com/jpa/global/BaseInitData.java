@@ -212,6 +212,7 @@ public class BaseInitData {
 			@Override
 			public void run(ApplicationArguments args) throws Exception {
 				self.work1();
+				self.work2();
 			}
 		};
 	}
@@ -255,12 +256,22 @@ public class BaseInitData {
 			.build();
 		p1.addComment(c3);
 
-		p1.removeComment(c1); // removeComment()로 Comment가 제거되도록 하려면, orphanRemoval = true 를 설정하면 된다
+		// p1.removeComment(c1); // (다른 트랜잭션에서) removeComment()로 Comment가 제거되도록 하려면, orphanRemoval = true 를 설정하면 된다
+		// 추가) c1 삭제는 현재 메서드의 트랜잭션 안에서 일어났으므로 더티 체킹을 통해 delete된 것이 아니라,
+		// 		트랜잭션 종료 시점에 p1 객체의 리스트에 c3가 없으므로 추가되지 않은 것뿐이다.
+		//		이렇게 한 트랜잭션 안에서 추가된 것이 삭제되는 건 orphanRemoval 설정과는 관계 없다.
 
 		// @ManyToOne -> 외래키
 		// @OneToMany -> 없어도 그만, 옵셔널
 		// -> 객체지향적으로 접근
 		// -> 양방향 객체 탐색
 		// -> 복잡함, 절제해서 사용 (잘 모르겠으면 사용하지 않는 걸 추천한다)
+	}
+
+	@Transactional
+	public void work2()	{
+		Post post = postService.findById(1L).get();
+		Comment c1 = commentService.findById(1L).get();
+		post.removeComment(c1); // 이 코드 때문에 delete가 일어난다
 	}
 }
