@@ -319,7 +319,7 @@ public class BaseInitData {
 
 				comments.get(1); // 2번째 댓글 가져오기
 				// 이렇게 1번째를 가져오고 2번째를 가져오게 하더라도, SELECT문이 실제로 2번 일어나지 않는다
-				// 하나의 INSERT문에서 두 댓글을 가져왔다 extracted value (1:BIGINT) -> [1] / extracted value (2:BIGINT) -> [2]
+				// 하나의 INSERT문에서 모든 댓글을 가져왔다 extracted value (1:BIGINT) -> [1] / extracted value (2:BIGINT) -> [2]
 			}
 		};
 	}
