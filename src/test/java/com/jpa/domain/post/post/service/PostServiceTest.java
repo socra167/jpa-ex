@@ -69,6 +69,7 @@ class PostServiceTest {
 		assertThat(foundPosts).hasSize(1);
 	}
 
+	@Transactional
 	@Test
 	@DisplayName("제목이 포함된 글들을 조회할 수 있다")
 	void findByTitleLike() {
@@ -76,6 +77,7 @@ class PostServiceTest {
 		assertThat(foundPosts).hasSize(3);
 	}
 
+	@Transactional
 	@Test
 	@DisplayName("아이디 순으로 내림차순 정렬되게 조회할 수 있다")
 	void findPostByIdDesc() {
@@ -85,4 +87,5 @@ class PostServiceTest {
 
 		assertThat(posts.get(0).getId()).isEqualTo(3);
 	}
+
 }
