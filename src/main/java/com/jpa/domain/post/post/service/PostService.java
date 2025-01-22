@@ -78,4 +78,8 @@ public class PostService {
 	public Page<Post> findAll(Pageable pageable) {
 		return postRepository.findAll(pageable);
 	}
+
+	public Page<Post> findByTitleLike(String keyword, Pageable pageable) {
+		return postRepository.findByTitleLike(keyword, pageable);
+	}
 }
