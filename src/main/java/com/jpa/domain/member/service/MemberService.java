@@ -27,4 +27,8 @@ public class MemberService {
 	public Optional<Member> findByUsername(String username) {
 		return memberRepository.findByUsername(username);
 	}
+
+	public long count() {
+		return memberRepository.count();
+	}
 }

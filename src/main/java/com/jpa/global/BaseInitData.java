@@ -53,6 +53,9 @@ public class BaseInitData {
 
 	@Transactional
 	public void createSampleMembers() {
+		if (0 < memberService.count()) {
+			return;
+		}
 		memberService.join("system", "password1", "시스템");
 		memberService.join("admin", "password2", "관리자");
 		memberService.join("user1", "password3", "유저1");
