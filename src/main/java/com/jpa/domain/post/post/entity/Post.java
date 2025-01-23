@@ -45,9 +45,11 @@ public class Post {
 
 	@CreatedDate // Jpa에서 생성일을 관리한다 (JpaAuditing 기능)
 	@Column(updatable = false) // 생성일자가 수정되지 않도록 한다
+	@Setter(AccessLevel.PRIVATE) // 이 필드에 Setter를 사용할 수 없도록 PRIVATE으로 만든다
 	private LocalDateTime createdDate;
 
 	@LastModifiedDate // Jpa에서 엔티티의 수정일을 관리한다 (JpaAuditing 기능)
+	@Setter(AccessLevel.PRIVATE) // 이 필드에 Setter를 사용할 수 없도록 PRIVATE으로 만든다
 	private LocalDateTime modifiedDate;
 
 	@Column(length = 100)
