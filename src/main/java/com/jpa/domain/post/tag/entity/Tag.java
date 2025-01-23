@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,6 +18,7 @@ import lombok.Setter;
 // 게시물(1) : 태그(N)
 // 실제로는 N:M에 가깝다
 
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -24,9 +26,11 @@ import lombok.Setter;
 @Setter
 @Entity
 public class Tag extends BaseEntity {
+	@EqualsAndHashCode.Include
 	@Column(length = 100)
 	private String name;
 
+	@EqualsAndHashCode.Include
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "post_id")
 	private Post post;

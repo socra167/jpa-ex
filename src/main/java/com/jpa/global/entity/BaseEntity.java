@@ -6,6 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import lombok.Setter;
 // BaseEntity에 대한 테이블은 필요 없으므로 @Entity를 붙이지 않는다
 // 그렇다고 아무것도 안해주면 JPA가 무시해버리기 때문에,
 // @MappedSuperclass 애너테이션으로 다른 Entity들이 상속받아 사용한다는 것을 알려준다
+@EqualsAndHashCode(onlyExplicitlyIncluded = true) // ID로만 equals, hashCode 비교하도록 설정
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

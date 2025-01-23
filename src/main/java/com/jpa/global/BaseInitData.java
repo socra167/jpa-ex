@@ -83,9 +83,9 @@ public class BaseInitData {
 		p1.addTag("개발");
 		p1.addTag("개발"); // 중복된 태그가 들어갈 수 있다
 		// [ 중복 데이터를 방지하려면? ]
-		// 1. 로직을 이용해서 막기 - 로직은 실수가 있을 수 있다
-		// 2. 자바 차원에서 막기
-		// 3. DB 수준에서 막기 - DB에서 중복된 값이 저장되지 않도록 한다
+		// 1. 로직을 이용해서 막기 	-> addTag() 로직에 검증 과정을 추가
+		// 2. 자바 차원에서 막기 	-> equals(), hashCode() 재정의
+		// 3. DB 수준에서 막기 	->
 
 		// 샘플 Comment 3개 생성
 		Comment c1 = Comment.builder()
