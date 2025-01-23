@@ -184,10 +184,39 @@ class PostServiceTest {
 	@Test
 	@DisplayName("글 목록에서 회원 정보 가져오기")
 	void findMemberFromPosts() {
-		List<Post> posts = postService.findAll();
+		List<Post> posts = postService.findAll(); // 목록 조회 SQL (1번 조회)
 
+		// 목록의 개수만큼 추가 SELECT Query가 발생한다 (N번 조회)
 		for (Post post : posts) {
 			System.out.println(post.getId() + ", " + post.getTitle() + ", " + post.getWriter().getUsername());
 		}
+
+		// [ N+1 Query 문제 ]
+		// 모든 게시물을 가져오면, 회원 수만큼 회원 정보를 조회해야 한다(SELECT)
+		// 회원이 2명이면 추가적인 SELECT 2번 발생, 100명이면 추가적인 SELECT 100번 발생
+		// 회원이 10만명이면 ... 10만 개의 SELECT Query
+
+		// Post에서 Member 정보가 필요할 때 가능한 방법은 2가지다
+		// 1. Post를 먼저 조회해서 member id를 알아온 후 -> member 조회 -> select 2번 조회
+		// 2. post와 member를 join해서 한번에 조회 -> ` fetch join -> jpql `
+
+		// 3. in을 사용해서 조회하게만들기
+		// select * from post where writer_id = 1 -> 1번
+		// select * from post where writer_id = 2 -> 2번
+		// select * from post where writer_id = 3 -> 3번
+		// ...
+		// select * from post where writer_id = 100 -> 100번
+		// => select * from post where member_id in (1, 2, 3, 4, ..., 100);
+
+		// [ 해결 방법 ]
+		// 지금 1번 방법을 사용하고 있기 때문에 문제가 발생한다
+		// 2번 방법으로 Join해서 다 가져오게 하면 해결된다 (jpql fetch join을 사용)
+		// 다른 방법도 있다. select * from post where member_id in (1, 2, 3, 4, ..., 100);
+		// 처럼 한방 쿼리로 가져오게 만들면 된다
+
+		// [ application.yml 설정 ]
+		// spring.jpa.hibernate.default_batch_fetch_size = 10, 한번에 10개씩 가져오라는 뜻
+		// -> 한 번의 추가적인 쿼리만 발생했다.
+		// fetch_size는 정해진 값은 없다. 잘 모르겠다면 50 ~ 100 정도를 권장하기는 한다. 이후 조정
 	}
 }
