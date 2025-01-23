@@ -92,6 +92,15 @@ public class Post extends BaseTime {
 	// addComment처럼 Comment를 먼저 생성한 걸 받아서 저장만 해주는 것보다
 	// 관련 정보를 넘기면, 생성부터 저장까지 Post에서 해주는 게 편하겠다 (OneToMany)
 	public void addTag(String name) {
+		// 로직으로 중복 태그가 추가되지 않도록 하기
+		Optional<Tag> existingTag = tags.stream()
+			.filter(tag -> tag.getName().equals(name))
+			.findFirst();
+
+		if (existingTag.isPresent()) {
+			return;
+		}
+
 		Tag tag = Tag.builder()
 			.name(name)
 			.post(this)
