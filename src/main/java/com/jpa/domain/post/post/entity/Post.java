@@ -8,6 +8,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.jpa.domain.member.entity.Member;
 import com.jpa.domain.post.comment.entity.Comment;
+import com.jpa.domain.post.tag.entity.Tag;
 import com.jpa.global.entity.BaseEntity;
 
 import jakarta.persistence.CascadeType;
@@ -41,7 +42,7 @@ public class Post extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Member writer;
 
-	@OneToMany(mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = false)
+	@OneToMany(mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
 	// @OneToMany만 사용하면 post_comment 테이블이 생성된다
 	// 외래 키를 누가 가져야 하는가? Comment 클래스에 있는 연관된 변수 이름 (외래키는 항상 다쪽에 생긴다)
 	// mapped를 사용하지 않은 쪽이 외래키의 주인이 된다(Comment)
@@ -55,6 +56,13 @@ public class Post extends BaseEntity {
 	// @OneToMany를 붙이지 않으면 컴파일 오류가 나오는데
 	// 'Basic' attribute type should not be a container
 	// Spring Data JPA에서 이 데이터를 어떻게 저장해야 할 지 모르기 때문이다
+
+	// 이 연관관계의 주인은 mappedBy가 붙지 않은 Tag가 된다
+	// PERSIST 부모(글)이 저장될 때 자식(태그)도 저장된다 / 부모가 영속될 때 자식도 영속된다
+	// orphanRemoval 부모 리스트에서 제거하면, 부모와의 연결이 끊어진 자식을 제거하겠다
+	@OneToMany(mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+	@Builder.Default
+	private List<Tag> tags = new ArrayList<>();
 
 	public void addComment(Comment comment) {
 		comments.add(comment);
@@ -79,5 +87,15 @@ public class Post extends BaseEntity {
 				comment.setPost(null);
 			});
 		comments.clear();
+	}
+
+	// addComment처럼 Comment를 먼저 생성한 걸 받아서 저장만 해주는 것보다
+	// 관련 정보를 넘기면, 생성부터 저장까지 Post에서 해주는 게 편하겠다 (OneToMany)
+	public void addTag(String name) {
+		Tag tag = Tag.builder()
+			.name(name)
+			.post(this)
+			.build();
+		tags.add(tag);
 	}
 }

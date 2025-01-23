@@ -77,6 +77,11 @@ public class BaseInitData {
 		postService.write(user1, "title1", "body2");
 		postService.write(user2, "title1", "body3");
 
+		// 샘플 Tag 3개 생성
+		p1.addTag("JPA");
+		p1.addTag("SpringBoot");
+		p1.addTag("개발");
+
 		// 샘플 Comment 3개 생성
 		Comment c1 = Comment.builder()
 			.writer(admin)
