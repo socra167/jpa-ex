@@ -9,7 +9,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import com.jpa.domain.member.entity.Member;
 import com.jpa.domain.post.comment.entity.Comment;
 import com.jpa.domain.post.tag.entity.Tag;
-import com.jpa.global.entity.BaseEntity;
+import com.jpa.global.entity.BaseTime;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -32,7 +32,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class Post extends BaseEntity {
+public class Post extends BaseTime {
 	@Column(length = 100)
 	private String title;
 

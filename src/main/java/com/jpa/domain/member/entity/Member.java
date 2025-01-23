@@ -2,7 +2,7 @@ package com.jpa.domain.member.entity;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.jpa.global.entity.BaseEntity;
+import com.jpa.global.entity.BaseTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,7 +20,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class Member extends BaseEntity {
+public class Member extends BaseTime {
 	@Column(length = 100)
 	private String username;
 

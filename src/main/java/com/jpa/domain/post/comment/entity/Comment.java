@@ -4,7 +4,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.jpa.domain.member.entity.Member;
 import com.jpa.domain.post.post.entity.Post;
-import com.jpa.global.entity.BaseEntity;
+import com.jpa.global.entity.BaseTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,7 +25,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class Comment extends BaseEntity {
+public class Comment extends BaseTime {
 	@Column(columnDefinition = "TEXT")
 	private String body;
 

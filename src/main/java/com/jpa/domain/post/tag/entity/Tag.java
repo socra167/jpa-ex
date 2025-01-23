@@ -1,13 +1,10 @@
 package com.jpa.domain.post.tag.entity;
 
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import com.jpa.domain.post.post.entity.Post;
 import com.jpa.global.entity.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -20,7 +17,6 @@ import lombok.Setter;
 // 게시물(1) : 태그(N)
 // 실제로는 N:M에 가깝다
 
-@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
