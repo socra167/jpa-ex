@@ -164,5 +164,30 @@ class PostServiceTest {
 		List<Post> posts = postService.findByWriterUsername("user1");
 		// Writer의 username으로 찾는다
 		assertThat(posts).hasSize(2);
+
+		// Post에서 Member 정보가 필요할 때 가능한 방법은 2가지다
+		// 1. Post를 먼저 조회해서 member id를 알아온 후 -> member 조회 -> select 2번 조회
+		// 2. post와 member를 join해서 한번에 조회
+		Post post = posts.get(0);
+		System.out.println("post.getId() = " + post.getId());
+		System.out.println("post.getTitle() = " + post.getTitle());
+		System.out.println("post.getWriter().getUsername() = " + post.getWriter().getUsername()); // <- member에 대해 select
+
+		// JPA에선 결과적으로 회원 정보를 가져올 땐 1번 방법을 사용했다
+		// Join을 하긴 했지만 회원 정보가 없다 -> 필요할 때 다시 조회(LAZY)
+
+		// 대부분의 경우, JPA는 연관된 정보를 가져올 때 SELECT Query를 여러 번 날린다
+		// EAGER로 미리 다 가져오면 되지 않을까? -> 그래도 동일한 쿼리가 발생했다
+	}
+
+	@Transactional
+	@Test
+	@DisplayName("글 목록에서 회원 정보 가져오기")
+	void findMemberFromPosts() {
+		List<Post> posts = postService.findAll();
+
+		for (Post post : posts) {
+			System.out.println(post.getId() + ", " + post.getTitle() + ", " + post.getWriter().getUsername());
+		}
 	}
 }
