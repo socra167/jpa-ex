@@ -85,7 +85,10 @@ public class BaseInitData {
 		// [ 중복 데이터를 방지하려면? ]
 		// 1. 로직을 이용해서 막기 	-> addTag() 로직에 검증 과정을 추가
 		// 2. 자바 차원에서 막기 	-> equals(), hashCode() 재정의
-		// 3. DB 수준에서 막기 	->
+		// 3. DB 수준에서 막기 	-> Tag entity에서 post_id, name을 복합키로 사용한다
+		// 						=> DuplicateKeyException 발생 : 중복된 복합키를 저장할 수 없도록 예외가 발생한다
+		p1.addTag("개발");
+		p1.addTag("Java");
 
 		// 샘플 Comment 3개 생성
 		Comment c1 = Comment.builder()

@@ -21,6 +21,8 @@ import lombok.Setter;
 @Setter
 @Entity
 public class Member extends BaseTime {
+	// username이 unique하면 username을 PK로 사용해도 되지만
+	// 관리 등 편의성 측면에서 id를 사용했다
 	@Column(length = 100)
 	private String username;
 

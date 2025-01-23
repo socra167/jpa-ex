@@ -1,16 +1,15 @@
 package com.jpa.domain.post.post.entity;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.jpa.domain.member.entity.Member;
 import com.jpa.domain.post.comment.entity.Comment;
 import com.jpa.domain.post.tag.entity.Tag;
+import com.jpa.domain.post.tag.entity.TagId;
 import com.jpa.global.entity.BaseTime;
 
 import jakarta.persistence.CascadeType;
@@ -64,7 +63,7 @@ public class Post extends BaseTime {
 	// orphanRemoval 부모 리스트에서 제거하면, 부모와의 연결이 끊어진 자식을 제거하겠다
 	@OneToMany(mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
 	@Builder.Default
-	private Set<Tag> tags = new HashSet<>();
+	private List<Tag> tags = new ArrayList<>();
 
 	public void addComment(Comment comment) {
 		comments.add(comment);
@@ -106,7 +105,7 @@ public class Post extends BaseTime {
 		*/
 
 		Tag tag = Tag.builder()
-			.name(name)
+			.id(new TagId(this.getId(), name))
 			.post(this)
 			.build();
 		tags.add(tag);
